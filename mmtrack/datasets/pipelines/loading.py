@@ -33,6 +33,7 @@ class LoadMultiImagesFromFile(LoadImageFromFile):
         for _results in results:
             _results = super().__call__(_results)
             outs.append(_results)
+
         return outs
 
 

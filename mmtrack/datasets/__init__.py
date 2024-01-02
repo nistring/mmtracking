@@ -7,7 +7,7 @@ from .coco_video_dataset import CocoVideoDataset
 from .dancetrack_dataset import DanceTrackDataset
 from .dataset_wrappers import RandomSampleConcatDataset
 from .got10k_dataset import GOT10kDataset
-from .imagenet_vid_dataset import ImagenetVIDDataset
+from .imagenet_vid_dataset import ImagenetVIDDataset, SUITDataset
 from .lasot_dataset import LaSOTDataset
 from .mot_challenge_dataset import MOTChallengeDataset
 from .otb_dataset import OTB100Dataset
@@ -31,5 +31,5 @@ __all__ = [
     'UAV123Dataset', 'TrackingNetDataset', 'OTB100Dataset',
     'YouTubeVISDataset', 'GOT10kDataset', 'VOTDataset', 'BaseSOTDataset',
     'SOTCocoDataset', 'SOTImageNetVIDDataset', 'RandomSampleConcatDataset',
-    'TaoDataset', 'DanceTrackDataset'
+    'TaoDataset', 'DanceTrackDataset', 'SUITDataset'
 ]
