@@ -1,14 +1,15 @@
 # dataset settings
-dataset_type = 'CocoVideoDataset'
-classes = ('c5', 'c6', 'c7', 'c8', 'UT', 'MT', 'LT', 'SSN', 'AD', 'PD')
+dataset_type = 'SUITDataset'
 data_root = '../data/SUIT/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
     dict(type='LoadMultiImagesFromFile'),
     dict(type='SeqLoadAnnotations', with_bbox=True, with_track=True),
-    dict(type='SeqResize', img_scale=(1000, 600), keep_ratio=True),
+    dict(type='SeqResize', img_scale=(500, 300), keep_ratio=True),
     dict(type='SeqRandomFlip', share_params=True, flip_ratio=0.5),
+    dict(type='SeqBlurAug'),
+    dict(type='SeqBrightnessAug', jitter_range=0.2),
     dict(type='SeqNormalize', **img_norm_cfg),
     dict(type='SeqPad', size_divisor=16),
     dict(
@@ -19,8 +20,7 @@ train_pipeline = [
 ]
 test_pipeline = [
     dict(type='LoadMultiImagesFromFile'),
-    dict(type='SeqResize', img_scale=(1000, 600), keep_ratio=True),
-    dict(type='SeqRandomFlip', share_params=True, flip_ratio=0.0),
+    dict(type='SeqResize', img_scale=(500, 300), keep_ratio=True),
     dict(type='SeqNormalize', **img_norm_cfg),
     dict(type='SeqPad', size_divisor=16),
     dict(
@@ -33,39 +33,27 @@ test_pipeline = [
 ]
 data = dict(
     samples_per_gpu=1,
-    workers_per_gpu=4,
+    workers_per_gpu=16,
     train=dict(
-            type=dataset_type,
-            classes=classes,
-            ann_file=data_root + 'annotations/train.json',
-            img_prefix=data_root + 'Data/train/',
-            ref_img_sampler=dict(
-                num_ref_imgs=2,
-                frame_range=9,
-                filter_key_img=True,
-                method='bilateral_uniform'),
-            pipeline=train_pipeline),
+        type=dataset_type,
+        ann_file=data_root + 'annotations/train.json',
+        img_prefix=data_root + 'data/train/',
+        ref_img_sampler=dict(
+            ref_indices=[-10,-6,-3,-1,1,3,6,10]),
+        pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        classes=classes,
         ann_file=data_root + 'annotations/val.json',
-        img_prefix=data_root + 'Data/val/',
+        img_prefix=data_root + 'data/val/',
         ref_img_sampler=dict(
-            num_ref_imgs=30,
-            frame_range=[-15, 15],
-            stride=1,
-            method='test_with_fix_stride'),
+            ref_indices=[-10,-6,-3,-1]),
         pipeline=test_pipeline,
         test_mode=True),
     test=dict(
         type=dataset_type,
-        classes=classes,
         ann_file=data_root + 'annotations/val.json',
-        img_prefix=data_root + 'Data/val/',
+        img_prefix=data_root + 'data/val/',
         ref_img_sampler=dict(
-            num_ref_imgs=30,
-            frame_range=[-15, 15],
-            stride=1,
-            method='test_with_fix_stride'),
+            ref_indices=[-10,-6,-3,-1]),
         pipeline=test_pipeline,
         test_mode=True))

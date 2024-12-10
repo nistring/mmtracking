@@ -581,11 +581,12 @@ class SeqBlurAug(object):
 
     Args:
         prob (list[float]): The probability to perform blur augmention for
-            each image. Defaults to [0.0, 0.2].
+            each image. Defaults to 0.5.
     """
 
-    def __init__(self, prob=[0.0, 0.2]):
+    def __init__(self, size=(3, 8), prob=0.5):
         self.prob = prob
+        self.size = size
 
     def __call__(self, results):
         """Call function.
@@ -604,8 +605,8 @@ class SeqBlurAug(object):
         for i, _results in enumerate(results):
             image = _results['img']
 
-            if self.prob[i] > np.random.random():
-                sizes = np.arange(5, 46, 2)
+            if self.prob > np.random.random():
+                sizes = np.arange(self.size[0], self.size[1], 2)
                 size = np.random.choice(sizes)
                 kernel = np.zeros((size, size))
                 c = int(size / 2)
@@ -819,12 +820,14 @@ class SeqRandomCrop(object):
                  crop_size,
                  allow_negative_crop=False,
                  share_params=False,
-                 bbox_clip_border=False):
+                 bbox_clip_border=False,
+                 prob=0.5):
         assert crop_size[0] > 0 and crop_size[1] > 0
         self.crop_size = crop_size
         self.allow_negative_crop = allow_negative_crop
         self.share_params = share_params
         self.bbox_clip_border = bbox_clip_border
+        self.prob = prob
         # The key correspondence from bboxes to labels and masks.
         self.bbox2label = {
             'gt_bboxes': ['gt_labels', 'gt_instance_ids'],
@@ -926,7 +929,8 @@ class SeqRandomCrop(object):
 
         outs = []
         for _results in results:
-            _results = self.random_crop(_results, offsets)
+            if self.prob > np.random.random():
+                _results = self.random_crop(_results, offsets)
             if _results is None:
                 return None
             outs.append(_results)

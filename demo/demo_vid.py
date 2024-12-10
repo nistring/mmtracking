@@ -3,7 +3,7 @@ import os
 import os.path as osp
 import tempfile
 from argparse import ArgumentParser
-
+import numpy as np
 import mmcv
 
 from mmtrack.apis import inference_vid, init_model
@@ -23,7 +23,7 @@ def main():
         default=False,
         help='whether to show visualizations.')
     parser.add_argument(
-        '--score-thr', type=float, default=0.8, help='bbox score threshold')
+        '--score-thr', type=float, default=0.5, help='bbox score threshold')
     parser.add_argument(
         '--thickness', default=3, type=int, help='Thickness of bbox lines.')
     parser.add_argument('--fps', help='FPS of the output video')
@@ -79,6 +79,7 @@ def main():
                 out_file = osp.join(out_path, img.rsplit(os.sep, 1)[-1])
         else:
             out_file = None
+
         model.show_result(
             img,
             result,
